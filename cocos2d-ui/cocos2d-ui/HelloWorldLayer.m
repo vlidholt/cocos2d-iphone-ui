@@ -13,6 +13,9 @@
 // Needed to obtain the Navigation Controller
 #import "AppDelegate.h"
 
+#import "CCControl.h"
+#import "CCButton.h"
+
 #pragma mark - HelloWorldLayer
 
 // HelloWorldLayer implementation
@@ -101,9 +104,18 @@
 		
 		// Add the menu to the layer
 		[self addChild:menu];
-
+        
+        CCButton* button = [[CCButton alloc] initWithTitle:@"Hello"];
+        button.position = ccp(100, 100);
+        [self addChild:button];
+        [button setTarget:self selector:@selector(callback:)];
 	}
 	return self;
+}
+
+- (void) callback:(id)sender
+{
+    NSLog(@"Tapped button");
 }
 
 // on "dealloc" you need to release all your retained objects

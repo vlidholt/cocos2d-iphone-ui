@@ -33,6 +33,9 @@
 		B7F02F0317D55FE1008A2E2D /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F0217D55FE1008A2E2D /* HelloWorldLayer.m */; };
 		B7F02F0617D55FE1008A2E2D /* IntroLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F0517D55FE1008A2E2D /* IntroLayer.m */; };
 		B7F02F1F17D5771A008A2E2D /* libcocos2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7F02F1617D576F7008A2E2D /* libcocos2d.a */; };
+		B7F02F2417D57C7C008A2E2D /* CCControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2317D57C7C008A2E2D /* CCControl.m */; };
+		B7F02F2717D5908D008A2E2D /* UITouch+CC.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2617D5908D008A2E2D /* UITouch+CC.m */; };
+		B7F02F2B17D65B65008A2E2D /* CCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2A17D65B65008A2E2D /* CCButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +116,12 @@
 		B7F02F0417D55FE1008A2E2D /* IntroLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IntroLayer.h; sourceTree = "<group>"; };
 		B7F02F0517D55FE1008A2E2D /* IntroLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntroLayer.m; sourceTree = "<group>"; };
 		B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "cocos2d-ios.xcodeproj"; path = "../../libs/cocos2d-iphone/cocos2d-ios.xcodeproj"; sourceTree = "<group>"; };
+		B7F02F2217D57C7C008A2E2D /* CCControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCControl.h; path = "cocos2d-ui-lib/CCControl.h"; sourceTree = SOURCE_ROOT; };
+		B7F02F2317D57C7C008A2E2D /* CCControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCControl.m; path = "cocos2d-ui-lib/CCControl.m"; sourceTree = SOURCE_ROOT; };
+		B7F02F2517D5908D008A2E2D /* UITouch+CC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UITouch+CC.h"; path = "cocos2d-ui-lib/UITouch+CC.h"; sourceTree = SOURCE_ROOT; };
+		B7F02F2617D5908D008A2E2D /* UITouch+CC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITouch+CC.m"; path = "cocos2d-ui-lib/UITouch+CC.m"; sourceTree = SOURCE_ROOT; };
+		B7F02F2917D65B65008A2E2D /* CCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCButton.h; path = "cocos2d-ui-lib/CCButton.h"; sourceTree = SOURCE_ROOT; };
+		B7F02F2A17D65B65008A2E2D /* CCButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCButton.m; path = "cocos2d-ui-lib/CCButton.m"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +189,7 @@
 				B7F02F0217D55FE1008A2E2D /* HelloWorldLayer.m */,
 				B7F02F0417D55FE1008A2E2D /* IntroLayer.h */,
 				B7F02F0517D55FE1008A2E2D /* IntroLayer.m */,
+				B7F02F2117D57C52008A2E2D /* cocos2d-ui-lib */,
 				B7F02D6E17D55FE0008A2E2D /* Resources */,
 				B7F02D8617D55FE0008A2E2D /* libs */,
 				B7F02EFA17D55FE1008A2E2D /* Supporting Files */,
@@ -232,6 +242,19 @@
 				B7F02F1A17D576F7008A2E2D /* libkazmath.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B7F02F2117D57C52008A2E2D /* cocos2d-ui-lib */ = {
+			isa = PBXGroup;
+			children = (
+				B7F02F2217D57C7C008A2E2D /* CCControl.h */,
+				B7F02F2317D57C7C008A2E2D /* CCControl.m */,
+				B7F02F2517D5908D008A2E2D /* UITouch+CC.h */,
+				B7F02F2617D5908D008A2E2D /* UITouch+CC.m */,
+				B7F02F2917D65B65008A2E2D /* CCButton.h */,
+				B7F02F2A17D65B65008A2E2D /* CCButton.m */,
+			);
+			name = "cocos2d-ui-lib";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -349,6 +372,9 @@
 				B7F02F0017D55FE1008A2E2D /* AppDelegate.m in Sources */,
 				B7F02F0317D55FE1008A2E2D /* HelloWorldLayer.m in Sources */,
 				B7F02F0617D55FE1008A2E2D /* IntroLayer.m in Sources */,
+				B7F02F2417D57C7C008A2E2D /* CCControl.m in Sources */,
+				B7F02F2717D5908D008A2E2D /* UITouch+CC.m in Sources */,
+				B7F02F2B17D65B65008A2E2D /* CCButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
