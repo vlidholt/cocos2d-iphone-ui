@@ -32,7 +32,53 @@
 		B7F02F0017D55FE1008A2E2D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02EFF17D55FE1008A2E2D /* AppDelegate.m */; };
 		B7F02F0317D55FE1008A2E2D /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F0217D55FE1008A2E2D /* HelloWorldLayer.m */; };
 		B7F02F0617D55FE1008A2E2D /* IntroLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F0517D55FE1008A2E2D /* IntroLayer.m */; };
+		B7F02F1F17D5771A008A2E2D /* libcocos2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7F02F1617D576F7008A2E2D /* libcocos2d.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B7F02F1317D576F7008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 509807081175041800EA7266;
+			remoteInfo = "build all libs";
+		};
+		B7F02F1517D576F7008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5018F24D0DFDEAC400C013A5;
+			remoteInfo = cocos2d;
+		};
+		B7F02F1717D576F7008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 502C65EE0DFEF3DD00E4107D;
+			remoteInfo = "cocos2d-documentation";
+		};
+		B7F02F1917D576F7008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A04A1FEB13B826B300ABAFB7;
+			remoteInfo = kazmath;
+		};
+		B7F02F1B17D57708008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5018F24C0DFDEAC400C013A5;
+			remoteInfo = cocos2d;
+		};
+		B7F02F1D17D57708008A2E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A04A1FEA13B826B300ABAFB7;
+			remoteInfo = kazmath;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		B7F02D5617D55FE0008A2E2D /* cocos2d-ui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cocos2d-ui.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,6 +112,7 @@
 		B7F02F0217D55FE1008A2E2D /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		B7F02F0417D55FE1008A2E2D /* IntroLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IntroLayer.h; sourceTree = "<group>"; };
 		B7F02F0517D55FE1008A2E2D /* IntroLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntroLayer.m; sourceTree = "<group>"; };
+		B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "cocos2d-ios.xcodeproj"; path = "../../libs/cocos2d-iphone/cocos2d-ios.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7F02F1F17D5771A008A2E2D /* libcocos2d.a in Frameworks */,
 				B7F02D5A17D55FE0008A2E2D /* QuartzCore.framework in Frameworks */,
 				B7F02D5C17D55FE0008A2E2D /* OpenGLES.framework in Frameworks */,
 				B7F02D5E17D55FE0008A2E2D /* OpenAL.framework in Frameworks */,
@@ -161,6 +209,7 @@
 		B7F02D8617D55FE0008A2E2D /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */,
 			);
 			name = libs;
 			sourceTree = "<group>";
@@ -172,6 +221,17 @@
 				B7F02EFC17D55FE1008A2E2D /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B7F02F0D17D576F7008A2E2D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B7F02F1417D576F7008A2E2D /* libbuild all libs.a */,
+				B7F02F1617D576F7008A2E2D /* libcocos2d.a */,
+				B7F02F1817D576F7008A2E2D /* libcocos2d-documentation.a */,
+				B7F02F1A17D576F7008A2E2D /* libkazmath.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -188,6 +248,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				B7F02F1C17D57708008A2E2D /* PBXTargetDependency */,
+				B7F02F1E17D57708008A2E2D /* PBXTargetDependency */,
 			);
 			name = "cocos2d-ui";
 			productName = "cocos2d-ui";
@@ -213,12 +275,49 @@
 			mainGroup = B7F02D4D17D55FDF008A2E2D;
 			productRefGroup = B7F02D5717D55FE0008A2E2D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B7F02F0D17D576F7008A2E2D /* Products */;
+					ProjectRef = B7F02F0C17D576F7008A2E2D /* cocos2d-ios.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B7F02D5517D55FE0008A2E2D /* cocos2d-ui */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B7F02F1417D576F7008A2E2D /* libbuild all libs.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libbuild all libs.a";
+			remoteRef = B7F02F1317D576F7008A2E2D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B7F02F1617D576F7008A2E2D /* libcocos2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcocos2d.a;
+			remoteRef = B7F02F1517D576F7008A2E2D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B7F02F1817D576F7008A2E2D /* libcocos2d-documentation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libcocos2d-documentation.a";
+			remoteRef = B7F02F1717D576F7008A2E2D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B7F02F1A17D576F7008A2E2D /* libkazmath.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libkazmath.a;
+			remoteRef = B7F02F1917D576F7008A2E2D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		B7F02D5417D55FE0008A2E2D /* Resources */ = {
@@ -255,6 +354,19 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B7F02F1C17D57708008A2E2D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cocos2d;
+			targetProxy = B7F02F1B17D57708008A2E2D /* PBXContainerItemProxy */;
+		};
+		B7F02F1E17D57708008A2E2D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = kazmath;
+			targetProxy = B7F02F1D17D57708008A2E2D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		B7F02F0717D55FE1008A2E2D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -271,6 +383,10 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"../libs/cocos2d-iphone/cocos2d\"/**",
+					"\"../libs/cocos2d-iphone/external/kazmath/include\"/**",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -290,6 +406,10 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"../libs/cocos2d-iphone/cocos2d\"/**",
+					"\"../libs/cocos2d-iphone/external/kazmath/include\"/**",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -304,7 +424,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "cocos2d-ui/Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"cocos2d-ui/libs/kazmath/include\"";
 				INFOPLIST_FILE = "cocos2d-ui/Resources/Info.plist";
 				OTHER_LDFLAGS = (
 					"-lz",
@@ -323,7 +442,6 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "cocos2d-ui/Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"cocos2d-ui/libs/kazmath/include\"";
 				INFOPLIST_FILE = "cocos2d-ui/Resources/Info.plist";
 				OTHER_LDFLAGS = (
 					"-lz",
