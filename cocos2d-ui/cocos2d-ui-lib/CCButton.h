@@ -47,6 +47,7 @@
 + (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame highlightedSpriteFrame:(CCSpriteFrame*) highlighted disabledSpriteFrame:(CCSpriteFrame*) disabled;
 
 - (id) initWithTitle:(NSString*) title;
+- (id) initWithTitle:(NSString *)title fontName:(NSString*)fontName fontSize:(float)size;
 - (id) initWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame;
 - (id) initWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame highlightedSpriteFrame:(CCSpriteFrame*) highlighted disabledSpriteFrame:(CCSpriteFrame*) disabled;
 

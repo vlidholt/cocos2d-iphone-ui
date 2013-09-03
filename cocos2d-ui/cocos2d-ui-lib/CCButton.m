@@ -36,6 +36,11 @@
     return [[self alloc] initWithTitle:title];
 }
 
++ (id) buttonWithTitle:(NSString*) title fontName:(NSString*)fontName fontSize:(float)size
+{
+    return [[self alloc] initWithTitle:title fontName:fontName fontSize:size];
+}
+
 + (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame
 {
     return [[self alloc] initWithTitle:title spriteFrame:spriteFrame];
@@ -53,6 +58,14 @@
     // Default properties for labels with only a title
     self.zoomWhenHighlighted = YES;
     
+    return self;
+}
+
+- (id) initWithTitle:(NSString *)title fontName:(NSString*)fontName fontSize:(float)size
+{
+    self = [self initWithTitle:title];
+    self.label.fontName = fontName;
+    self.label.fontSize = size;
     return self;
 }
 

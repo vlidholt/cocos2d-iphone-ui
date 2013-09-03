@@ -45,63 +45,6 @@
 	if( (self=[super init]) ) {
 		
 		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
-
-		// ask director for the window size
-		CGSize size = [[CCDirector sharedDirector] winSize];
-	
-		// position the label on the center of the screen
-		label.position =  ccp( size.width /2 , size.height/2 );
-		
-		// add the label as a child to this Layer
-		[self addChild: label];
-		
-		
-		
-		//
-		// Leaderboards and Achievements
-		//
-		
-		// Default font size will be 28 points.
-		[CCMenuItemFont setFontSize:28];
-		
-		// to avoid a retain-cycle with the menuitem and blocks
-		__block id copy_self = self;
-		
-		// Achievement Menu Item using blocks
-		CCMenuItem *itemAchievement = [CCMenuItemFont itemWithString:@"Achievements" block:^(id sender) {
-			
-			
-			GKAchievementViewController *achivementViewController = [[GKAchievementViewController alloc] init];
-			achivementViewController.achievementDelegate = copy_self;
-			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-			
-			[[app navController] presentModalViewController:achivementViewController animated:YES];
-			
-		}];
-		
-		// Leaderboard Menu Item using blocks
-		CCMenuItem *itemLeaderboard = [CCMenuItemFont itemWithString:@"Leaderboard" block:^(id sender) {
-			
-			
-			GKLeaderboardViewController *leaderboardViewController = [[GKLeaderboardViewController alloc] init];
-			leaderboardViewController.leaderboardDelegate = copy_self;
-			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
-			
-			[[app navController] presentModalViewController:leaderboardViewController animated:YES];
-			
-		}];
-
-		
-		CCMenu *menu = [CCMenu menuWithItems:itemAchievement, itemLeaderboard, nil];
-		
-		[menu alignItemsHorizontallyWithPadding:20];
-		[menu setPosition:ccp( size.width/2, size.height/2 - 50)];
-		
-		// Add the menu to the layer
-		[self addChild:menu];
         
         CCSpriteFrame* frame = [CCSpriteFrame frameWithTextureFilename:@"button.png" rect:CGRectMake(0, 0, 64, 64)];
         
@@ -114,7 +57,7 @@
         [self addChild:button];
         [button setTarget:self selector:@selector(callback:)];
         
-        CCButton* button2 = [[CCButton alloc] initWithTitle:@"Hello2"];
+        CCButton* button2 = [[CCButton alloc] initWithTitle:@"Hello2" fontName:@"Marker Felt" fontSize:24];
         button2.position = ccp(300, 300);
         [self addChild:button2];
 	}
