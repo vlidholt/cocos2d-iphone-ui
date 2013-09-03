@@ -12,49 +12,123 @@
 
 - (id) init
 {
-    return [self initWithTitle:@"" spriteFrameName:NULL];
+    return [self initWithTitle:@"" spriteFrame:NULL];
+}
+
++ (id) buttonWithTitle:(NSString*) title
+{
+    return [[self alloc] initWithTitle:title];
+}
+
++ (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame
+{
+    return [[self alloc] initWithTitle:title spriteFrame:spriteFrame];
+}
+
++ (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame highlightedSpriteFrame:(CCSpriteFrame*) highlighted disabledSpriteFrame:(CCSpriteFrame*) disabled
+{
+    return [[self alloc] initWithTitle:title spriteFrame:spriteFrame highlightedSpriteFrame: highlighted disabledSpriteFrame:disabled];
 }
 
 - (id) initWithTitle:(NSString *)title
 {
-    return [self initWithTitle:title spriteFrameName:NULL];
+    self = [self initWithTitle:title spriteFrame:NULL highlightedSpriteFrame:NULL disabledSpriteFrame:NULL];
+    
+    // Default properties for labels with only a title
+    self.zoomWhenHighlighted = YES;
+    
+    return self;
 }
 
-- (id) initWithTitle:(NSString*) title spriteFrameName:(NSString*) frameName
+- (id) initWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame
+{
+    self = [self initWithTitle:title spriteFrame:spriteFrame highlightedSpriteFrame:NULL disabledSpriteFrame:NULL];
+    
+    // Setup default colors for when only one frame is used
+    [self setBackgroundColor:ccc3(190, 190, 190) forState:CCControlStateHighlighted];
+    [self setLabelColor:ccc3(190, 190, 190) forState:CCControlStateHighlighted];
+    
+    [self setBackgroundOpacity:127 forState:CCControlStateDisabled];
+    [self setLabelOpacity:127 forState:CCControlStateDisabled];
+    
+    return self;
+}
+
+- (id) initWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame highlightedSpriteFrame:(CCSpriteFrame*) highlighted disabledSpriteFrame:(CCSpriteFrame*) disabled
 {
     self = [super init];
     if (!self) return NULL;
     
-    // Setup label
-    self.label = [CCLabelTTF labelWithString:title fontName:@"Helvetica" fontSize:12];
+    if (!title) title = @"";
+    
+    // Setup holders for properties
+    _backgroundColors = [NSMutableDictionary dictionary];
+    _backgroundOpacities = [NSMutableDictionary dictionary];
+    _backgroundSpriteFrames = [NSMutableDictionary dictionary];
     
     _labelColors = [NSMutableDictionary dictionary];
-    
-    [self setLabelColor:ccc3(127, 127, 127) forState:CCControlStateSelected];
+    _labelOpacities = [NSMutableDictionary dictionary];
     
     // Setup background image
-    if (frameName)
+    if (spriteFrame)
     {
-        self.background = [CCSprite9Slice spriteWithSpriteFrameName:frameName];
+        _background = [CCSprite9Slice spriteWithSpriteFrame:spriteFrame];
+        [self setBackgroundSpriteFrame:spriteFrame forState:CCControlStateNormal];
     }
     else
     {
-        self.background = [[CCSprite9Slice alloc] init];
+        _background = [[CCSprite9Slice alloc] init];
     }
     
     [self addChild:_background z:0];
+    
+    // Setup label
+    _label = [CCLabelTTF labelWithString:title fontName:@"Helvetica" fontSize:14];
+    
     [self addChild:_label z:1];
     
+    // Setup original scale
+    _originalScaleX = _originalScaleY = 1;
+    
     [self needsLayout];
+    [self stateChanged];
     
     return self;
 }
 
 - (void) layout
 {
-    // Calculate content size
-    CGSize size = self.label.contentSize;
+    CGSize paddedLabelSize = _label.contentSize;
+    paddedLabelSize.width += _horizontalPadding * 2;
+    paddedLabelSize.height += _verticalPadding * 2;
     
+    CGSize size = paddedLabelSize;
+    
+    BOOL shrunkSize = NO;
+    size = self.preferredSize;
+    
+    if (size.width < paddedLabelSize.width) size.width = paddedLabelSize.width;
+    if (size.height < paddedLabelSize.height) size.height = paddedLabelSize.height;
+    
+    if (self.maxSize.width > 0 && self.maxSize.width < size.width)
+    {
+        size.width = self.maxSize.width;
+        shrunkSize = YES;
+    }
+    if (self.maxSize.height > 0 && self.maxSize.height < size.height)
+    {
+        size.height = self.maxSize.height;
+        shrunkSize = YES;
+    }
+    
+    if (shrunkSize)
+    {
+        // TODO: Shrink Label
+    }
+    
+    _background.contentSize = size;
+    _background.anchorPoint = ccp(0,0);
+    _background.position = ccp(0,0);
     _label.position = ccp((int)(size.width/2), ((int)size.height/2));
     
     _contentSize = size;
@@ -64,54 +138,167 @@
 
 - (void) touchEntered:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    self.selected = YES;
+    self.highlighted = YES;
 }
 
 - (void) touchExited:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    self.selected = NO;
+    self.highlighted = NO;
 }
 
 - (void) touchUpInside:(UITouch *)touch withEvent:(UIEvent *)event
 {
     [self triggerAction];
-    self.selected = NO;
+    self.highlighted = NO;
 }
 
 - (void) touchUpOutside:(UITouch *)touch withEvent:(UIEvent *)event
 {
-    self.selected = NO;
+    self.highlighted = NO;
+}
+
+- (void) updatePropertiesForState:(NSUInteger)state
+{
+    // Update background
+    _background.color = [self backgroundColorForState:state];
+    _background.opacity = [self backgroundOpacityForState:state];
+    
+    CCSpriteFrame* spriteFrame = [self backgroundSpriteFrameForState:state];
+    if (!spriteFrame) spriteFrame = [self backgroundSpriteFrameForState:CCControlStateNormal];
+    [_background setDisplayFrame:spriteFrame];
+    
+    // Update label
+    _label.color = [self labelColorForState:state];
+    _label.opacity = [self labelOpacityForState:state];
+    
+    [self needsLayout];
 }
 
 - (void) stateChanged
 {
-    if (self.selected)
+    if (self.enabled)
     {
-        _label.color = [self labelColorForState:CCControlStateSelected];
-        
-        [_label runAction:[CCScaleTo actionWithDuration:0.1 scale:1.2]];
+        // Button is enabled
+        if (self.highlighted)
+        {
+            [self updatePropertiesForState:CCControlStateHighlighted];
+            
+            if (_zoomWhenHighlighted)
+            {
+                [_label runAction:[CCScaleTo actionWithDuration:0.1 scaleX:_originalScaleX*1.2 scaleY:_originalScaleY*1.2]];
+            }
+        }
+        else
+        {
+            [self updatePropertiesForState:CCControlStateNormal];
+            
+            [_label stopAllActions];
+            if (_zoomWhenHighlighted)
+            {
+                _label.scaleX = _originalScaleX;
+                _label.scaleY = _originalScaleY;
+            }
+        }
     }
     else
     {
-        _label.color = [self labelColorForState:CCControlStateNormal];
-        
-        [_label stopAllActions];
-        _label.scale = 1.0;
+        // Button is disabled
+        [self updatePropertiesForState:CCControlStateDisabled];
     }
 }
 
-- (void) setLabelColor:(ccColor3B)color forState:(NSUInteger)state
+#pragma mark Properties
+
+- (void) setScale:(float)scale
 {
-    [_labelColors setObject:[NSValue value:&color withObjCType:@encode(ccColor3B)] forKey:[NSNumber numberWithInt:state]];
+    _originalScaleX = _originalScaleY = scale;
+    [super setScale:scale];
 }
 
-- (ccColor3B) labelColorForState:(NSUInteger)state
+- (void) setScaleX:(float)scaleX
+{
+    _originalScaleX = scaleX;
+    [super setScaleX:scaleX];
+}
+
+- (void) setScaleY:(float)scaleY
+{
+    _originalScaleY = scaleY;
+    [super setScaleY:scaleY];
+}
+
+- (void) setLabelColor:(ccColor3B)color forState:(CCControlState)state
+{
+    [_labelColors setObject:[NSValue value:&color withObjCType:@encode(ccColor3B)] forKey:[NSNumber numberWithInt:state]];
+    [self stateChanged];
+}
+
+- (ccColor3B) labelColorForState:(CCControlState)state
 {
     NSValue* val = [_labelColors objectForKey:[NSNumber numberWithInt:state]];
     if (!val) return ccc3(255, 255, 255);
     ccColor3B color;
     [val getValue:&color];
     return color;
+}
+
+- (void) setLabelOpacity:(GLubyte)opacity forState:(CCControlState)state
+{
+    [_labelOpacities setObject:[NSNumber numberWithInt:opacity] forKey:[NSNumber numberWithInt:state]];
+    [self stateChanged];
+}
+
+- (GLubyte) labelOpacityForState:(CCControlState)state
+{
+    NSNumber* val = [_labelOpacities objectForKey:[NSNumber numberWithInt:state]];
+    if (!val) return 255;
+    return [val intValue];
+}
+
+- (void) setBackgroundColor:(ccColor3B)color forState:(CCControlState)state
+{
+    [_backgroundColors setObject:[NSValue value:&color withObjCType:@encode(ccColor3B)] forKey:[NSNumber numberWithInt:state]];
+    [self stateChanged];
+}
+
+- (ccColor3B) backgroundColorForState:(CCControlState)state
+{
+    NSValue* val = [_backgroundColors objectForKey:[NSNumber numberWithInt:state]];
+    if (!val) return ccc3(255, 255, 255);
+    ccColor3B color;
+    [val getValue:&color];
+    return color;
+}
+
+- (void) setBackgroundOpacity:(GLubyte)opacity forState:(CCControlState)state
+{
+    [_backgroundOpacities setObject:[NSNumber numberWithInt:opacity] forKey:[NSNumber numberWithInt:state]];
+    [self stateChanged];
+}
+
+- (GLubyte) backgroundOpacityForState:(CCControlState)state
+{
+    NSNumber* val = [_backgroundOpacities objectForKey:[NSNumber numberWithInt:state]];
+    if (!val) return 255;
+    return [val intValue];
+}
+
+- (void) setBackgroundSpriteFrame:(CCSpriteFrame*)spriteFrame forState:(CCControlState)state
+{
+    if (spriteFrame)
+    {
+        [_backgroundSpriteFrames setObject:spriteFrame forKey:[NSNumber numberWithInt:state]];
+    }
+    else
+    {
+        [_backgroundSpriteFrames removeObjectForKey:[NSNumber numberWithInt:state]];
+    }
+    [self stateChanged];
+}
+
+- (CCSpriteFrame*) backgroundSpriteFrameForState:(CCControlState)state
+{
+    return [_backgroundSpriteFrames objectForKey:[NSNumber numberWithInt:state]];
 }
 
 @end

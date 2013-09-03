@@ -8,32 +8,6 @@
 
 #import "CCNode.h"
 
-enum {
-    CCControlEventTouchDown           = 1 <<  0,      // on all touch downs
-    CCControlEventTouchDownRepeat     = 1 <<  1,      // on multiple touchdowns (tap count > 1)
-    CCControlEventTouchDragInside     = 1 <<  2,
-    CCControlEventTouchDragOutside    = 1 <<  3,
-    CCControlEventTouchDragEnter      = 1 <<  4,
-    CCControlEventTouchDragExit       = 1 <<  5,
-    CCControlEventTouchUpInside       = 1 <<  6,
-    CCControlEventTouchUpOutside      = 1 <<  7,
-    CCControlEventTouchCancel         = 1 <<  8,
-    
-    CCControlEventValueChanged        = 1 << 12,     // sliders, etc.
-    
-    CCControlEventEditingDidBegin     = 1 << 16,     // UITextField
-    CCControlEventEditingChanged      = 1 << 17,
-    CCControlEventEditingDidEnd       = 1 << 18,
-    CCControlEventEditingDidEndOnExit = 1 << 19,     // 'return key' ending editing
-    
-    CCControlEventAllTouchEvents      = 0x00000FFF,  // for touch events
-    CCControlEventAllEditingEvents    = 0x000F0000,  // for UITextField
-    CCControlEventApplicationReserved = 0x0F000000,  // range available for application use
-    CCControlEventSystemReserved      = 0xF0000000,  // range reserved for internal framework use
-    CCControlEventAllEvents           = 0xFFFFFFFF
-};
-typedef NSUInteger CCControlEvent;
-
 /** The possible state for a control.  */
 enum
 {
