@@ -79,7 +79,6 @@
 			
 			[[app navController] presentModalViewController:achivementViewController animated:YES];
 			
-			[achivementViewController release];
 		}];
 		
 		// Leaderboard Menu Item using blocks
@@ -93,7 +92,6 @@
 			
 			[[app navController] presentModalViewController:leaderboardViewController animated:YES];
 			
-			[leaderboardViewController release];
 		}];
 
 		
@@ -105,10 +103,20 @@
 		// Add the menu to the layer
 		[self addChild:menu];
         
-        CCButton* button = [[CCButton alloc] initWithTitle:@"Hello"];
-        button.position = ccp(100, 100);
+        CCSpriteFrame* frame = [CCSpriteFrame frameWithTextureFilename:@"button.png" rect:CGRectMake(0, 0, 64, 64)];
+        
+        CCButton* button = [[CCButton alloc] initWithTitle:@"HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello" spriteFrame:frame];
+        //button.preferredSize = CGSizeMake(200, 100);
+        button.horizontalPadding = 15;
+        button.verticalPadding = 15;
+        button.position = ccp(200, 200);
+        //button.enabled = NO;
         [self addChild:button];
         [button setTarget:self selector:@selector(callback:)];
+        
+        CCButton* button2 = [[CCButton alloc] initWithTitle:@"Hello2"];
+        button2.position = ccp(300, 300);
+        [self addChild:button2];
 	}
 	return self;
 }
@@ -119,15 +127,6 @@
 }
 
 // on "dealloc" you need to release all your retained objects
-- (void) dealloc
-{
-	// in case you have something to dealloc, do it in this method
-	// in this particular example nothing needs to be released.
-	// cocos2d will automatically release all the children (Label)
-	
-	// don't forget to call "super dealloc"
-	[super dealloc];
-}
 
 #pragma mark GameKit delegate
 

@@ -36,6 +36,7 @@
 		B7F02F2417D57C7C008A2E2D /* CCControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2317D57C7C008A2E2D /* CCControl.m */; };
 		B7F02F2717D5908D008A2E2D /* UITouch+CC.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2617D5908D008A2E2D /* UITouch+CC.m */; };
 		B7F02F2B17D65B65008A2E2D /* CCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2A17D65B65008A2E2D /* CCButton.m */; };
+		B7F02F2F17D6961D008A2E2D /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = B7F02F2E17D6961D008A2E2D /* button.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +123,7 @@
 		B7F02F2617D5908D008A2E2D /* UITouch+CC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UITouch+CC.m"; path = "cocos2d-ui-lib/UITouch+CC.m"; sourceTree = SOURCE_ROOT; };
 		B7F02F2917D65B65008A2E2D /* CCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCButton.h; path = "cocos2d-ui-lib/CCButton.h"; sourceTree = SOURCE_ROOT; };
 		B7F02F2A17D65B65008A2E2D /* CCButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCButton.m; path = "cocos2d-ui-lib/CCButton.m"; sourceTree = SOURCE_ROOT; };
+		B7F02F2E17D6961D008A2E2D /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = Resources/button.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +202,7 @@
 		B7F02D6E17D55FE0008A2E2D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B7F02F2E17D6961D008A2E2D /* button.png */,
 				B7F02D6F17D55FE0008A2E2D /* Default.png */,
 				B7F02D7117D55FE0008A2E2D /* Default@2x.png */,
 				B7F02D7317D55FE0008A2E2D /* Default-568h@2x.png */,
@@ -358,6 +361,7 @@
 				B7F02D8017D55FE0008A2E2D /* Icon.png in Resources */,
 				B7F02D8217D55FE0008A2E2D /* Icon@2x.png in Resources */,
 				B7F02D8517D55FE0008A2E2D /* iTunesArtwork in Resources */,
+				B7F02F2F17D6961D008A2E2D /* button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,6 +450,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -465,6 +470,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "cocos2d-ui/Prefix.pch";
