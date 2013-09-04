@@ -25,10 +25,12 @@
 #import "CCScrollView.h"
 #import "CCDirector.h"
 #import "UITouch+CC.h"
+#import "CGPointExtension.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #define kCCScrollViewBoundsSlowDown 0.5
+#define kCCScrollViewBounceFilter 0.5
 #define kCCScrollViewDeacceleration 0.95
 #define kCCScrollViewVelocityLowerCap 20
 #define kCCScrollViewAllowInteractionBelowVelocity 50
@@ -183,6 +185,9 @@
 
 - (void) update:(ccTime)df
 {
+    float fps = 1.0/df;
+    float p = 60/fps;
+    
     if (!_isPanning)
     {
         if (_velocity.x != 0 || _velocity.y != 0)
@@ -190,13 +195,9 @@
             CGPoint delta = ccpMult(_velocity, df);
             _contentNode.position = ccpAdd(_contentNode.position, delta);
             
-            _velocity = ccpMult(_velocity, kCCScrollViewDeacceleration);
+            _velocity = ccpMult(_velocity, powf(kCCScrollViewDeacceleration,p));
             
-            if (fabs(_velocity.x) < kCCScrollViewVelocityLowerCap)
-            {
-                NSLog(@"Layer stopped");
-                _velocity.x = 0;
-            }
+            if (fabs(_velocity.x) < kCCScrollViewVelocityLowerCap) _velocity.x = 0;
             if (fabs(_velocity.y) < kCCScrollViewVelocityLowerCap) _velocity.y = 0;
         }
         
@@ -230,20 +231,33 @@
                 _hasPosTargetY = YES;
             }
         }
+        
+        float filter = 1.0 - powf(1.0-kCCScrollViewBounceFilter, p);// clampf(kCCScrollViewBounceFilter/(60.0 * df), 0, 1);
 
         if (_hasPosTargetX)
         {
-            newPos.x = _posTarget.x * 0.3 + newPos.x * 0.7;
+            newPos.x = _posTarget.x * filter + newPos.x * (1.0 - filter);
+            
+            if (fabs(newPos.x - _posTarget.x) < 0.5)
+            {
+                // Hit target
+                newPos.x = _posTarget.x;
+                _hasPosTargetX = NO;
+            }
         }
         if (_hasPosTargetY)
         {
-            newPos.y = _posTarget.y * 0.3 + newPos.y * 0.7;
+            newPos.y = _posTarget.y * filter + newPos.y * (1.0 - filter);
+            
+            if (fabs(newPos.y - _posTarget.y) < 0.5)
+            {
+                // Hit target
+                newPos.y = _posTarget.y;
+                _hasPosTargetY = NO;
+            }
         }
 
-        if (_hasPosTargetX || _hasPosTargetY)
-        {
-            _contentNode.position = ccpMult(newPos, -1);
-        }
+        _contentNode.position = ccpMult(newPos, -1);
     }
 }
 
