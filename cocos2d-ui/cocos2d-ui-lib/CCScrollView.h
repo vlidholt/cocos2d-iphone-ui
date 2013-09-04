@@ -42,6 +42,9 @@
 
 @property (nonatomic,strong) CCNode* contentNode;
 
+@property (nonatomic,assign) BOOL horizontalScrollEnabled;
+@property (nonatomic,assign) BOOL verticalScrollEnabled;
+
 @property (nonatomic,readonly) float minScrollX;
 @property (nonatomic,readonly) float maxScrollX;
 @property (nonatomic,readonly) float minScrollY;

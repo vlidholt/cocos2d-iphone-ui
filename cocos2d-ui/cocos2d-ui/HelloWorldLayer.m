@@ -59,6 +59,7 @@
         }
         
         CCScrollView* scroll = [[CCScrollView alloc] initWithContentNode:content contentSize:CGSizeMake(1024, 768)];
+        scroll.verticalScrollEnabled = NO;
         [self addChild:scroll];
         
 	}

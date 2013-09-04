@@ -73,6 +73,7 @@
     self = [super init];
     if (!self) return NULL;
     
+    // Setup content node
     self.contentSize = contentSize;
     self.contentNode = contentNode;
     
@@ -80,6 +81,10 @@
     {
         [self addChild:contentNode];
     }
+    
+    // Default properties
+    _horizontalScrollEnabled = YES;
+    _verticalScrollEnabled = YES;
     
     // Create gesture recognizers
     _panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
@@ -137,18 +142,27 @@
 
 - (void) setScrollPosition:(CGPoint)newPos
 {
+    [self setScrollPosition:newPos animated:NO];
+}
+
+- (void) setScrollPosition:(CGPoint)newPos animated:(BOOL)animated
+{
     // Check bounds
     if (newPos.x > self.maxScrollX) newPos.x = self.maxScrollX;
     if (newPos.x < self.minScrollX) newPos.x = self.minScrollX;
     if (newPos.y > self.maxScrollY) newPos.y = self.maxScrollY;
     if (newPos.y < self.minScrollY) newPos.y = self.minScrollY;
     
-    _contentNode.position = ccpMult(newPos, -1);
-}
-
-- (void) setScrollPosition:(CGPoint)scrollPosition animated:(BOOL)animated
-{
-    
+    if (animated)
+    {
+        _posTarget = newPos;
+        _hasPosTargetX = YES;
+        _hasPosTargetY = YES;
+    }
+    else
+    {
+        _contentNode.position = ccpMult(newPos, -1);
+    }
 }
 
 - (CGPoint) scrollPosition
@@ -285,6 +299,10 @@
         // Calculate the translation in node space
         CGPoint translation = ccpSub(_rawTranslationStart, rawTranslation);
         
+        // Check if scroll directions has been disabled
+        if (!_horizontalScrollEnabled) translation.x = 0;
+        if (!_verticalScrollEnabled) translation.y = 0;
+        
         // Check bounds
         CGPoint newPos = ccpAdd(_startScrollPos, translation);
         
@@ -302,9 +320,12 @@
         velocityRaw = [self convertToNodeSpace:velocityRaw];
         
         _velocity = ccpSub(velocityRaw, ref);
-        _isPanning = NO;
         
-        //NSLog(@"Ended (%f,%f)", translation.x, translation.y);
+        // Check if scroll directions has been disabled
+        if (!_horizontalScrollEnabled) _velocity.x = 0;
+        if (!_verticalScrollEnabled) _velocity.y = 0;
+        
+        _isPanning = NO;
     }
     else if (pgr.state == UIGestureRecognizerStateCancelled)
     {
@@ -320,11 +341,14 @@
 
 - (void) handleTap:(UIGestureRecognizer *)gestureRecognizer
 {
-    //if (gestureRecognizer.state == UIGestureRecognizerStateBegan)
-    //{
-        NSLog(@"TAP");
-        _velocity = CGPointZero;
-    //}
+    // Stop layer from moving
+    _velocity = CGPointZero;
+    
+    // Snap to a whole position
+    CGPoint pos = _contentNode.position;
+    pos.x = roundf(pos.x);
+    pos.y = roundf(pos.y);
+    _contentNode.position = pos;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
