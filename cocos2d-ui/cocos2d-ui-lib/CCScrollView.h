@@ -24,11 +24,20 @@
 
 #import "CCNode.h"
 
+@class CCTapDownGestureRecognizer;
+
 @interface CCScrollView : CCNode <UIGestureRecognizerDelegate>
 {
     UIPanGestureRecognizer* _panRecognizer;
+    CCTapDownGestureRecognizer* _tapRecognizer;
+    
     CGPoint _rawTranslationStart;
     CGPoint _startScrollPos;
+    BOOL _isPanning;
+    CGPoint _velocity;
+    BOOL _hasPosTargetX;
+    BOOL _hasPosTargetY;
+    CGPoint _posTarget;
 }
 
 @property (nonatomic,strong) CCNode* contentNode;
@@ -39,6 +48,7 @@
 @property (nonatomic,readonly) float maxScrollY;
 
 @property (nonatomic,assign) CGPoint scrollPosition;
+@property (nonatomic,readonly) BOOL moving;
 
 - (id) initWithContentNode:(CCNode*)contentNode contentSize:(CGSize) contentSize;
 

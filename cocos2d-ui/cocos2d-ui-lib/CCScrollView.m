@@ -26,6 +26,42 @@
 #import "CCDirector.h"
 #import "UITouch+CC.h"
 
+#import <UIKit/UIGestureRecognizerSubclass.h>
+
+#define kCCScrollViewBoundsSlowDown 0.5
+#define kCCScrollViewDeacceleration 0.95
+#define kCCScrollViewVelocityLowerCap 20
+#define kCCScrollViewAllowInteractionBelowVelocity 50
+
+#pragma mark CCTapDownGestureRecognizer
+
+@interface CCTapDownGestureRecognizer : UIGestureRecognizer
+@end
+
+@implementation CCTapDownGestureRecognizer
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (self.state == UIGestureRecognizerStatePossible)
+    {
+        self.state = UIGestureRecognizerStateRecognized;
+    }
+}
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStateFailed;
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStateFailed;
+}
+@end
+
+#pragma mark -
+#pragma mark CCScrollView
+
 @implementation CCScrollView
 
 #pragma mark Initializers
@@ -43,15 +79,22 @@
         [self addChild:contentNode];
     }
     
-    // Create a pan gesture recognizer
-    _panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+    // Create gesture recognizers
+    _panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    _tapRecognizer = [[CCTapDownGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     
     // Do not start tracking gestures until scrollview is visible on screen
     _panRecognizer.enabled = NO;
+    _tapRecognizer.enabled = NO;
+    
+    _panRecognizer.delegate = self;
+    _tapRecognizer.delegate = self;
     
     // Add recognizer
     UIView* view = [CCDirector sharedDirector].view;
-    [view setGestureRecognizers:[NSArray arrayWithObject:_panRecognizer]];
+    [view setGestureRecognizers:[NSArray arrayWithObjects:_tapRecognizer,_panRecognizer, NULL]];
+    
+    [self scheduleUpdate];
     
     return self;
 }
@@ -83,6 +126,13 @@
     return 0;
 }
 
+#pragma mark Panning and setting position
+
+- (BOOL) moving
+{
+    return ((_velocity.x != 0 || _velocity.y != 0) && !_isPanning);
+}
+
 - (void) setScrollPosition:(CGPoint)newPos
 {
     // Check bounds
@@ -94,14 +144,112 @@
     _contentNode.position = ccpMult(newPos, -1);
 }
 
+- (void) setScrollPosition:(CGPoint)scrollPosition animated:(BOOL)animated
+{
+    
+}
+
 - (CGPoint) scrollPosition
 {
     return ccpMult(_contentNode.position, -1);
 }
 
+- (void) panLayerToTarget:(CGPoint) newPos
+{
+    // Scroll at half speed outside of bounds
+    if (newPos.x > self.maxScrollX)
+    {
+        float diff = newPos.x - self.maxScrollX;
+        newPos.x = self.maxScrollX + diff * kCCScrollViewBoundsSlowDown;
+    }
+    if (newPos.x < self.minScrollX)
+    {
+        float diff = self.minScrollX - newPos.x;
+        newPos.x = self.minScrollX - diff * kCCScrollViewBoundsSlowDown;
+    }
+    if (newPos.y > self.maxScrollY)
+    {
+        float diff = newPos.y - self.maxScrollY;
+        newPos.y = self.maxScrollY + diff * kCCScrollViewBoundsSlowDown;
+    }
+    if (newPos.y < self.minScrollY)
+    {
+        float diff = self.minScrollY - newPos.y;
+        newPos.y = self.minScrollY - diff * kCCScrollViewBoundsSlowDown;
+    }
+    
+    _contentNode.position = ccpMult(newPos, -1);
+}
+
+- (void) update:(ccTime)df
+{
+    if (!_isPanning)
+    {
+        if (_velocity.x != 0 || _velocity.y != 0)
+        {
+            CGPoint delta = ccpMult(_velocity, df);
+            _contentNode.position = ccpAdd(_contentNode.position, delta);
+            
+            _velocity = ccpMult(_velocity, kCCScrollViewDeacceleration);
+            
+            if (fabs(_velocity.x) < kCCScrollViewVelocityLowerCap)
+            {
+                NSLog(@"Layer stopped");
+                _velocity.x = 0;
+            }
+            if (fabs(_velocity.y) < kCCScrollViewVelocityLowerCap) _velocity.y = 0;
+        }
+        
+        // Check bounds and add position targets if applicable
+        CGPoint newPos = self.scrollPosition;
+
+        if (!_hasPosTargetX)
+        {
+            if (newPos.x > self.maxScrollX)
+            {
+                _posTarget.x = self.maxScrollX;
+                _hasPosTargetX = YES;
+            }
+            if (newPos.x < self.minScrollX)
+            {
+                _posTarget.x = self.minScrollX;
+                _hasPosTargetX = YES;
+            }
+        }
+
+        if (!_hasPosTargetY)
+        {
+            if (newPos.y > self.maxScrollY)
+            {
+                _posTarget.y = self.maxScrollY;
+                _hasPosTargetY = YES;
+            }
+            if (newPos.y < self.minScrollY)
+            {
+                _posTarget.y = self.minScrollY;
+                _hasPosTargetY = YES;
+            }
+        }
+
+        if (_hasPosTargetX)
+        {
+            newPos.x = _posTarget.x * 0.3 + newPos.x * 0.7;
+        }
+        if (_hasPosTargetY)
+        {
+            newPos.y = _posTarget.y * 0.3 + newPos.y * 0.7;
+        }
+
+        if (_hasPosTargetX || _hasPosTargetY)
+        {
+            _contentNode.position = ccpMult(newPos, -1);
+        }
+    }
+}
+
 #pragma mark Gesture recognizer
 
-- (void)handleGesture:(UIGestureRecognizer *)gestureRecognizer
+- (void)handlePan:(UIGestureRecognizer *)gestureRecognizer
 {
     CCDirector* dir = [CCDirector sharedDirector];
     UIPanGestureRecognizer* pgr = (UIPanGestureRecognizer*)gestureRecognizer;
@@ -112,20 +260,22 @@
     
     if (pgr.state == UIGestureRecognizerStateBegan)
     {
+        _hasPosTargetX = NO;
+        _hasPosTargetY = NO;
         _rawTranslationStart = rawTranslation;
         _startScrollPos = self.scrollPosition;
+        _isPanning = YES;
     }
     else if (pgr.state == UIGestureRecognizerStateChanged)
     {
         // Calculate the translation in node space
         CGPoint translation = ccpSub(_rawTranslationStart, rawTranslation);
-        NSLog(@"Changed (%f,%f)", translation.x, translation.y);
         
         // Check bounds
         CGPoint newPos = ccpAdd(_startScrollPos, translation);
         
         // Update position
-        self.scrollPosition = newPos;
+        [self panLayerToTarget:newPos];
     }
     else if (pgr.state == UIGestureRecognizerStateEnded)
     {
@@ -137,15 +287,16 @@
         velocityRaw = [dir convertToGL:velocityRaw];
         velocityRaw = [self convertToNodeSpace:velocityRaw];
         
-        CGPoint velocity = ccpSub(velocityRaw, ref);
-        
-        NSLog(@"Velocity: (%f,%f)", velocity.x, velocity.y);
+        _velocity = ccpSub(velocityRaw, ref);
+        _isPanning = NO;
         
         //NSLog(@"Ended (%f,%f)", translation.x, translation.y);
     }
     else if (pgr.state == UIGestureRecognizerStateCancelled)
     {
         NSLog(@"Cancelled");
+        
+        _isPanning = NO;
     }
     else
     {
@@ -153,26 +304,47 @@
     }
 }
 
+- (void) handleTap:(UIGestureRecognizer *)gestureRecognizer
+{
+    //if (gestureRecognizer.state == UIGestureRecognizerStateBegan)
+    //{
+        NSLog(@"TAP");
+        _velocity = CGPointZero;
+    //}
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     if (!_contentNode) return NO;
     if (!self.visible) return NO;
+    
+    BOOL slowMove = (fabs(_velocity.x) < kCCScrollViewAllowInteractionBelowVelocity &&
+                     fabs(_velocity.y) < kCCScrollViewAllowInteractionBelowVelocity);
+    
+    if (gestureRecognizer == _tapRecognizer && (slowMove || _isPanning))
+    {
+        NSLog(@"Skipping tap SLOW: %d",slowMove);
+        return NO;
+    }
+    
     return [self hitTestWithWorldPos:[touch locationInWorld]];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    return NO;
+    return (otherGestureRecognizer == _panRecognizer || otherGestureRecognizer == _tapRecognizer);
 }
 
 - (void) onEnterTransitionDidFinish
 {
     _panRecognizer.enabled = YES;
+    _tapRecognizer.enabled = YES;
 }
 
 - (void) onExitTransitionDidStart
 {
     _panRecognizer.enabled = NO;
+    _tapRecognizer.enabled = NO;
 }
 
 @end
