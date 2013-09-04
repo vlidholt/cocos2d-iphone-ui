@@ -37,6 +37,7 @@
 		B7F02F2717D5908D008A2E2D /* UITouch+CC.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2617D5908D008A2E2D /* UITouch+CC.m */; };
 		B7F02F2B17D65B65008A2E2D /* CCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F2A17D65B65008A2E2D /* CCButton.m */; };
 		B7F02F2F17D6961D008A2E2D /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = B7F02F2E17D6961D008A2E2D /* button.png */; };
+		B7F02F3217D6AC66008A2E2D /* CCScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B7F02F3117D6AC66008A2E2D /* CCScrollView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,8 @@
 		B7F02F2917D65B65008A2E2D /* CCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCButton.h; path = "cocos2d-ui-lib/CCButton.h"; sourceTree = SOURCE_ROOT; };
 		B7F02F2A17D65B65008A2E2D /* CCButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCButton.m; path = "cocos2d-ui-lib/CCButton.m"; sourceTree = SOURCE_ROOT; };
 		B7F02F2E17D6961D008A2E2D /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = Resources/button.png; sourceTree = "<group>"; };
+		B7F02F3017D6AC66008A2E2D /* CCScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCScrollView.h; path = "cocos2d-ui-lib/CCScrollView.h"; sourceTree = SOURCE_ROOT; };
+		B7F02F3117D6AC66008A2E2D /* CCScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CCScrollView.m; path = "cocos2d-ui-lib/CCScrollView.m"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,6 +259,8 @@
 				B7F02F2617D5908D008A2E2D /* UITouch+CC.m */,
 				B7F02F2917D65B65008A2E2D /* CCButton.h */,
 				B7F02F2A17D65B65008A2E2D /* CCButton.m */,
+				B7F02F3017D6AC66008A2E2D /* CCScrollView.h */,
+				B7F02F3117D6AC66008A2E2D /* CCScrollView.m */,
 			);
 			name = "cocos2d-ui-lib";
 			sourceTree = "<group>";
@@ -379,6 +384,7 @@
 				B7F02F2417D57C7C008A2E2D /* CCControl.m in Sources */,
 				B7F02F2717D5908D008A2E2D /* UITouch+CC.m in Sources */,
 				B7F02F2B17D65B65008A2E2D /* CCButton.m in Sources */,
+				B7F02F3217D6AC66008A2E2D /* CCScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

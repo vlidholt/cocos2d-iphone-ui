@@ -43,6 +43,7 @@
 @property (nonatomic,assign) float verticalPadding;
 
 + (id) buttonWithTitle:(NSString*) title;
++ (id) buttonWithTitle:(NSString*) title fontName:(NSString*)fontName fontSize:(float)size;
 + (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame;
 + (id) buttonWithTitle:(NSString*) title spriteFrame:(CCSpriteFrame*) spriteFrame highlightedSpriteFrame:(CCSpriteFrame*) highlighted disabledSpriteFrame:(CCSpriteFrame*) disabled;
 

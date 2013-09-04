@@ -15,6 +15,7 @@
 
 #import "CCControl.h"
 #import "CCButton.h"
+#import "CCScrollView.h"
 
 #pragma mark - HelloWorldLayer
 
@@ -45,21 +46,21 @@
 	if( (self=[super init]) ) {
 		
 		// create and initialize a Label
+        int numPages = 4;
         
-        CCSpriteFrame* frame = [CCSpriteFrame frameWithTextureFilename:@"button.png" rect:CGRectMake(0, 0, 64, 64)];
+        CCNode* content = [CCNode node];
+        content.contentSize = CGSizeMake(1024 * numPages, 768);
+        for (int i = 0; i < numPages; i++)
+        {
+            CCButton* btn = [CCButton buttonWithTitle:[NSString stringWithFormat:@"%d",i] fontName:@"Marker Felt" fontSize:100];
+            btn.position = ccp(1024*i + 512, 384);
+            btn.anchorPoint = ccp(0.5, 0.5);
+            [content addChild:btn];
+        }
         
-        CCButton* button = [[CCButton alloc] initWithTitle:@"HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello" spriteFrame:frame];
-        //button.preferredSize = CGSizeMake(200, 100);
-        button.horizontalPadding = 15;
-        button.verticalPadding = 15;
-        button.position = ccp(200, 200);
-        //button.enabled = NO;
-        [self addChild:button];
-        [button setTarget:self selector:@selector(callback:)];
+        CCScrollView* scroll = [[CCScrollView alloc] initWithContentNode:content contentSize:CGSizeMake(1024, 768)];
+        [self addChild:scroll];
         
-        CCButton* button2 = [[CCButton alloc] initWithTitle:@"Hello2" fontName:@"Marker Felt" fontSize:24];
-        button2.position = ccp(300, 300);
-        [self addChild:button2];
 	}
 	return self;
 }
