@@ -160,7 +160,7 @@
     _background.position = ccp(0,0);
     _label.position = ccp((int)(size.width/2), ((int)size.height/2));
     
-    _contentSize = size;
+    self.contentSize = size;
     
     [super layout];
 }

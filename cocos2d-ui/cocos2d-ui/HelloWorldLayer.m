@@ -52,7 +52,7 @@
         content.contentSize = CGSizeMake(1024 * numPages, 768);
         for (int i = 0; i < numPages; i++)
         {
-            CCButton* btn = [CCButton buttonWithTitle:[NSString stringWithFormat:@"%d",i] fontName:@"Marker Felt" fontSize:100];
+            CCButton* btn = [CCButton buttonWithTitle:[NSString stringWithFormat:@"%d",i] fontName:@"Marker Felt" fontSize:200];
             btn.position = ccp(1024*i + 512, 384);
             btn.anchorPoint = ccp(0.5, 0.5);
             [content addChild:btn];
