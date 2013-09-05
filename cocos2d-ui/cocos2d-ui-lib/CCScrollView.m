@@ -30,10 +30,14 @@
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #define kCCScrollViewBoundsSlowDown 0.5
-#define kCCScrollViewBounceFilter 0.5
 #define kCCScrollViewDeacceleration 0.95
-#define kCCScrollViewVelocityLowerCap 20
-#define kCCScrollViewAllowInteractionBelowVelocity 50
+#define kCCScrollViewVelocityLowerCap 20.0
+#define kCCScrollViewAllowInteractionBelowVelocity 50.0
+#define kCCScrollViewSnapDuration 0.4
+#define kCCScrollViewSnapDurationFallOff 100.0
+#define kCCScrollViewAutoPageSpeed 500.0
+#define kCCScrollViewMaxOuterDistBeforeBounceBack 50.0
+#define kCCScrollViewMinVelocityBeforeBounceBack 100.0
 
 #pragma mark CCTapDownGestureRecognizer
 
@@ -130,7 +134,28 @@
 
 - (float) maxScrollY
 {
-    return 0;
+    if (!_contentNode) return 0;
+    
+    float maxScroll = _contentNode.contentSize.height - self.contentSize.height;
+    if (maxScroll < 0) maxScroll = 0;
+    
+    return maxScroll;
+}
+
+- (int) numHorizontalPages
+{
+    if (!_pagingEnabled) return 0;
+    if (!self.contentSize.width || !_contentNode.contentSize.width) return 0;
+    
+    return _contentNode.contentSize.width / self.contentSize.width;
+}
+
+- (int) numVerticalPages
+{
+    if (!_pagingEnabled) return 0;
+    if (!self.contentSize.height || !_contentNode.contentSize.height) return 0;
+    
+    return _contentNode.contentSize.height / self.contentSize.height;
 }
 
 #pragma mark Panning and setting position
@@ -147,6 +172,8 @@
 
 - (void) setScrollPosition:(CGPoint)newPos animated:(BOOL)animated
 {
+    [_contentNode stopAllActions];
+    
     // Check bounds
     if (newPos.x > self.maxScrollX) newPos.x = self.maxScrollX;
     if (newPos.x < self.minScrollX) newPos.x = self.minScrollX;
@@ -155,9 +182,18 @@
     
     if (animated)
     {
-        _posTarget = newPos;
-        _hasPosTargetX = YES;
-        _hasPosTargetY = YES;
+        CGPoint oldPos = self.scrollPosition;
+        float dist = ccpDistance(newPos, oldPos);
+        
+        float duration = clampf(dist / kCCScrollViewSnapDurationFallOff, 0, kCCScrollViewSnapDuration);
+        
+        _velocity = CGPointZero;
+        
+        CCAction* action = [CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:duration position:ccpMult(newPos, -1)] rate:2];
+        
+        [_contentNode runAction:action];
+        
+        _animating = YES;
     }
     else
     {
@@ -207,71 +243,61 @@
         if (_velocity.x != 0 || _velocity.y != 0)
         {
             CGPoint delta = ccpMult(_velocity, df);
+            
             _contentNode.position = ccpAdd(_contentNode.position, delta);
             
-            _velocity = ccpMult(_velocity, powf(kCCScrollViewDeacceleration,p));
+            // Deaccelerate layer
+            float deaccelerationX = kCCScrollViewDeacceleration;
+            float deaccelerationY = kCCScrollViewDeacceleration;
             
+            // Adjust for frame rate
+            deaccelerationX = powf(deaccelerationX, p);
+            
+            // Update velocity
+            _velocity.x *= deaccelerationX;
+            _velocity.y *= deaccelerationY;
+            
+            // If velocity is low make it 0
             if (fabs(_velocity.x) < kCCScrollViewVelocityLowerCap) _velocity.x = 0;
             if (fabs(_velocity.y) < kCCScrollViewVelocityLowerCap) _velocity.y = 0;
         }
         
-        // Check bounds and add position targets if applicable
-        CGPoint newPos = self.scrollPosition;
-
-        if (!_hasPosTargetX)
-        {
-            if (newPos.x > self.maxScrollX)
-            {
-                _posTarget.x = self.maxScrollX;
-                _hasPosTargetX = YES;
-            }
-            if (newPos.x < self.minScrollX)
-            {
-                _posTarget.x = self.minScrollX;
-                _hasPosTargetX = YES;
-            }
-        }
-
-        if (!_hasPosTargetY)
-        {
-            if (newPos.y > self.maxScrollY)
-            {
-                _posTarget.y = self.maxScrollY;
-                _hasPosTargetY = YES;
-            }
-            if (newPos.y < self.minScrollY)
-            {
-                _posTarget.y = self.minScrollY;
-                _hasPosTargetY = YES;
-            }
-        }
+        // Bounce back to edge if layer is too far outside of the scroll area or if it is outside and moving slowly
+        BOOL bounceToEdge = NO;
+        CGPoint posTarget = self.scrollPosition;
         
-        float filter = 1.0 - powf(1.0-kCCScrollViewBounceFilter, p);// clampf(kCCScrollViewBounceFilter/(60.0 * df), 0, 1);
-
-        if (_hasPosTargetX)
+        if (!_animating && !_pagingEnabled)
         {
-            newPos.x = _posTarget.x * filter + newPos.x * (1.0 - filter);
-            
-            if (fabs(newPos.x - _posTarget.x) < 0.5)
+            if ((posTarget.x < self.minScrollX && fabs(_velocity.x) < kCCScrollViewMinVelocityBeforeBounceBack) ||
+                (posTarget.x < self.minScrollX - kCCScrollViewMaxOuterDistBeforeBounceBack))
             {
-                // Hit target
-                newPos.x = _posTarget.x;
-                _hasPosTargetX = NO;
+                bounceToEdge = YES;
+            }
+            
+            if ((posTarget.x > self.maxScrollX && fabs(_velocity.x) < kCCScrollViewMinVelocityBeforeBounceBack) ||
+                (posTarget.x > self.maxScrollX + kCCScrollViewMaxOuterDistBeforeBounceBack))
+            {
+                bounceToEdge = YES;
+            }
+            
+            if ((posTarget.y < self.minScrollY && fabs(_velocity.y) < kCCScrollViewMinVelocityBeforeBounceBack) ||
+                (posTarget.y < self.minScrollY - kCCScrollViewMaxOuterDistBeforeBounceBack))
+            {
+                bounceToEdge = YES;
+            }
+            
+            if ((posTarget.y > self.maxScrollY && fabs(_velocity.y) < kCCScrollViewMinVelocityBeforeBounceBack) ||
+                (posTarget.y > self.maxScrollY + kCCScrollViewMaxOuterDistBeforeBounceBack))
+            {
+                bounceToEdge = YES;
+            }
+            
+            if (bounceToEdge)
+            {
+                // TODO: Doesn't bounces back on both axis, when it should only bounce back on the axis that is out of bounds (other axis shouldn't slow down)
+                [self setScrollPosition:posTarget animated:YES];
             }
         }
-        if (_hasPosTargetY)
-        {
-            newPos.y = _posTarget.y * filter + newPos.y * (1.0 - filter);
-            
-            if (fabs(newPos.y - _posTarget.y) < 0.5)
-            {
-                // Hit target
-                newPos.y = _posTarget.y;
-                _hasPosTargetY = NO;
-            }
-        }
-
-        _contentNode.position = ccpMult(newPos, -1);
     }
 }
 
@@ -288,8 +314,7 @@
     
     if (pgr.state == UIGestureRecognizerStateBegan)
     {
-        _hasPosTargetX = NO;
-        _hasPosTargetY = NO;
+        _animating = NO;
         _rawTranslationStart = rawTranslation;
         _startScrollPos = self.scrollPosition;
         _isPanning = YES;
@@ -325,17 +350,51 @@
         if (!_horizontalScrollEnabled) _velocity.x = 0;
         if (!_verticalScrollEnabled) _velocity.y = 0;
         
+        // Setup a target if paging is enabled
+        if (_pagingEnabled)
+        {
+            CGPoint posTarget = CGPointZero;
+            
+            // Calculate new horizontal page
+            int pageX = roundf(self.scrollPosition.x/self.contentSize.width);
+            
+            if (fabs(_velocity.x) >= kCCScrollViewAutoPageSpeed && _horizontalPage == pageX)
+            {
+                if (_velocity.x < 0) pageX += 1;
+                else pageX -= 1;
+            }
+            
+            pageX = clampf(pageX, 0, self.numHorizontalPages -1);
+            _horizontalPage = pageX;
+            
+            posTarget.x = pageX * self.contentSize.width;
+            
+            // Calculate new vertical page
+            int pageY = roundf(self.scrollPosition.y/self.contentSize.height);
+            
+            if (fabs(_velocity.y) >= kCCScrollViewAutoPageSpeed && _verticalPage == pageY)
+            {
+                if (_velocity.y < 0) pageY += 1;
+                else pageY -= 1;
+            }
+            
+            pageY = clampf(pageY, 0, self.numVerticalPages -1);
+            _verticalPage = pageY;
+            
+            posTarget.y = pageY * self.contentSize.height;
+            
+            [self setScrollPosition:posTarget animated:YES];
+        }
+        
         _isPanning = NO;
     }
     else if (pgr.state == UIGestureRecognizerStateCancelled)
     {
-        NSLog(@"Cancelled");
-        
         _isPanning = NO;
-    }
-    else
-    {
-        NSLog(@"UNKOWN!");
+        _velocity = CGPointZero;
+        _animating = NO;
+        
+        [self setScrollPosition:self.scrollPosition animated:NO];
     }
 }
 
@@ -361,7 +420,6 @@
     
     if (gestureRecognizer == _tapRecognizer && (slowMove || _isPanning))
     {
-        NSLog(@"Skipping tap SLOW: %d",slowMove);
         return NO;
     }
     

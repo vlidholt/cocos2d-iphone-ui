@@ -34,16 +34,20 @@
     CGPoint _rawTranslationStart;
     CGPoint _startScrollPos;
     BOOL _isPanning;
+    BOOL _animating;
     CGPoint _velocity;
-    BOOL _hasPosTargetX;
-    BOOL _hasPosTargetY;
-    CGPoint _posTarget;
 }
 
 @property (nonatomic,strong) CCNode* contentNode;
 
 @property (nonatomic,assign) BOOL horizontalScrollEnabled;
 @property (nonatomic,assign) BOOL verticalScrollEnabled;
+
+@property (nonatomic,assign) BOOL pagingEnabled;
+@property (nonatomic,assign) int horizontalPage;
+@property (nonatomic,assign) int verticalPage;
+@property (nonatomic,readonly) int numVerticalPages;
+@property (nonatomic,readonly) int numHorizontalPages;
 
 @property (nonatomic,readonly) float minScrollX;
 @property (nonatomic,readonly) float maxScrollX;
