@@ -29,6 +29,8 @@
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
+#pragma mark Constants
+
 #define kCCScrollViewBoundsSlowDown 0.5
 #define kCCScrollViewDeacceleration 0.95
 #define kCCScrollViewVelocityLowerCap 20.0
@@ -39,7 +41,7 @@
 #define kCCScrollViewMaxOuterDistBeforeBounceBack 50.0
 #define kCCScrollViewMinVelocityBeforeBounceBack 100.0
 
-#pragma mark CCTapDownGestureRecognizer
+#pragma mark Helper classes
 
 @interface CCTapDownGestureRecognizer : UIGestureRecognizer
 @end
@@ -64,6 +66,80 @@
     self.state = UIGestureRecognizerStateFailed;
 }
 @end
+
+
+
+@interface CCMoveToX : CCActionInterval
+{
+	float _endPosition;
+	float _startPos;
+}
+@end
+
+@implementation CCMoveToX
+
+-(id) initWithDuration: (ccTime) t positionX: (float) p
+{
+	if( (self=[super initWithDuration: t]) )
+		_endPosition = p;
+	return self;
+}
+
+
+-(void) startWithTarget:(CCNode *)target
+{
+	[super startWithTarget:target];
+	_startPos = target.position.x;
+}
+
+-(void) update: (ccTime) t
+{
+    CCNode *node = (CCNode*)_target;
+    
+    float positionDelta = _endPosition - _startPos;
+    float x = _startPos + positionDelta * t;
+    float y = node.position.y;
+    
+	node.position = ccp(x,y);
+}
+@end
+
+
+@interface CCMoveToY : CCActionInterval
+{
+	float _endPosition;
+	float _startPos;
+}
+@end
+
+@implementation CCMoveToY
+
+-(id) initWithDuration: (ccTime) t positionY: (float) p
+{
+	if( (self=[super initWithDuration: t]) )
+		_endPosition = p;
+	return self;
+}
+
+
+-(void) startWithTarget:(CCNode *)target
+{
+	[super startWithTarget:target];
+	_startPos = target.position.y;
+}
+
+-(void) update: (ccTime) t
+{
+    CCNode *node = (CCNode*)_target;
+    
+    float positionDelta = _endPosition - _startPos;
+    float y = _startPos + positionDelta * t;
+    float x = node.position.x;
+    
+	node.position = ccp(x,y);
+}
+@end
+
 
 #pragma mark -
 #pragma mark CCScrollView
@@ -142,6 +218,24 @@
     return maxScroll;
 }
 
+#pragma mark Paging
+
+- (void) setHorizontalPage:(int)horizontalPage
+{
+    [self setHorizontalPage:horizontalPage animated:NO];
+}
+
+- (void) setHorizontalPage:(int)horizontalPage animated:(BOOL)animated
+{
+    NSAssert(horizontalPage >= 0 && horizontalPage < self.numHorizontalPages, @"Setting invalid horizontal page");
+    
+    CGPoint pos = self.scrollPosition;
+    pos.x = horizontalPage * _contentNode.contentSize.width;
+    
+    [self setScrollPosition:pos animated:animated];
+    _horizontalPage = horizontalPage;
+}
+
 - (int) numHorizontalPages
 {
     if (!_pagingEnabled) return 0;
@@ -172,13 +266,30 @@
 
 - (void) setScrollPosition:(CGPoint)newPos animated:(BOOL)animated
 {
-    [_contentNode stopAllActions];
+    BOOL xMoved = (newPos.x != self.scrollPosition.x);
+    BOOL yMoved = (newPos.y != self.scrollPosition.y);
     
     // Check bounds
-    if (newPos.x > self.maxScrollX) newPos.x = self.maxScrollX;
-    if (newPos.x < self.minScrollX) newPos.x = self.minScrollX;
-    if (newPos.y > self.maxScrollY) newPos.y = self.maxScrollY;
-    if (newPos.y < self.minScrollY) newPos.y = self.minScrollY;
+    if (newPos.x > self.maxScrollX)
+    {
+        newPos.x = self.maxScrollX;
+        xMoved = YES;
+    }
+    if (newPos.x < self.minScrollX)
+    {
+        newPos.x = self.minScrollX;
+        xMoved = YES;
+    }
+    if (newPos.y > self.maxScrollY)
+    {
+        newPos.y = self.maxScrollY;
+        yMoved = YES;
+    }
+    if (newPos.y < self.minScrollY)
+    {
+        newPos.y = self.minScrollY;
+        yMoved = YES;
+    }
     
     if (animated)
     {
@@ -187,16 +298,24 @@
         
         float duration = clampf(dist / kCCScrollViewSnapDurationFallOff, 0, kCCScrollViewSnapDuration);
         
-        _velocity = CGPointZero;
-        
-        CCAction* action = [CCEaseOut actionWithAction:[CCMoveTo actionWithDuration:duration position:ccpMult(newPos, -1)] rate:2];
-        
-        [_contentNode runAction:action];
-        
-        _animating = YES;
+        if (xMoved)
+        {
+            _velocity.x = 0;
+            CCAction* action = [CCEaseOut actionWithAction:[[CCMoveToX alloc] initWithDuration:duration positionX:-newPos.x] rate:2];
+            [_contentNode runAction:action];
+            _animatingX = YES;
+        }
+        if (yMoved)
+        {
+            _velocity.y = 0;
+            CCAction* action = [CCEaseOut actionWithAction:[[CCMoveToY alloc] initWithDuration:duration positionY:-newPos.y] rate:2];
+            [_contentNode runAction:action];
+            _animatingY = YES;
+        }
     }
     else
     {
+        [_contentNode stopAllActions];
         _contentNode.position = ccpMult(newPos, -1);
     }
 }
@@ -266,7 +385,7 @@
         BOOL bounceToEdge = NO;
         CGPoint posTarget = self.scrollPosition;
         
-        if (!_animating && !_pagingEnabled)
+        if (!_animatingX && !_pagingEnabled)
         {
             if ((posTarget.x < self.minScrollX && fabs(_velocity.x) < kCCScrollViewMinVelocityBeforeBounceBack) ||
                 (posTarget.x < self.minScrollX - kCCScrollViewMaxOuterDistBeforeBounceBack))
@@ -279,7 +398,9 @@
             {
                 bounceToEdge = YES;
             }
-            
+        }
+        if (!_animatingY && !_pagingEnabled)
+        {
             if ((posTarget.y < self.minScrollY && fabs(_velocity.y) < kCCScrollViewMinVelocityBeforeBounceBack) ||
                 (posTarget.y < self.minScrollY - kCCScrollViewMaxOuterDistBeforeBounceBack))
             {
@@ -291,12 +412,12 @@
             {
                 bounceToEdge = YES;
             }
-            
-            if (bounceToEdge)
-            {
-                // TODO: Doesn't bounces back on both axis, when it should only bounce back on the axis that is out of bounds (other axis shouldn't slow down)
-                [self setScrollPosition:posTarget animated:YES];
-            }
+        }
+        
+        if (bounceToEdge)
+        {
+            // Setting the scroll position to the current position will force it to be in bounds
+            [self setScrollPosition:posTarget animated:YES];
         }
     }
 }
@@ -314,7 +435,8 @@
     
     if (pgr.state == UIGestureRecognizerStateBegan)
     {
-        _animating = NO;
+        _animatingX = NO;
+        _animatingY = NO;
         _rawTranslationStart = rawTranslation;
         _startScrollPos = self.scrollPosition;
         _isPanning = YES;
@@ -392,7 +514,8 @@
     {
         _isPanning = NO;
         _velocity = CGPointZero;
-        _animating = NO;
+        _animatingX = NO;
+        _animatingY = NO;
         
         [self setScrollPosition:self.scrollPosition animated:NO];
     }

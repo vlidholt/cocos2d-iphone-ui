@@ -34,7 +34,8 @@
     CGPoint _rawTranslationStart;
     CGPoint _startScrollPos;
     BOOL _isPanning;
-    BOOL _animating;
+    BOOL _animatingX;
+    BOOL _animatingY;
     CGPoint _velocity;
 }
 
